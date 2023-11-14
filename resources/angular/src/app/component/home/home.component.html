@@ -1,0 +1,28 @@
+<div class="container">
+    <div  class="row">
+        <form>
+            <div class="form-group">
+              <input type="text" class="form-control" value="" placeholder="Search by Title" [(ngModel)]="searchKey" (input)="filterBooks()" [ngModelOptions]="{standalone: true}">
+            </div>
+            <div class="form-group">
+              <select class="form-control" [(ngModel)]="category_id" (change)="filterBooks()" [ngModelOptions]="{standalone: true}">
+                <option value="All">All Categories</option>
+                <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+              </select>
+            </div>
+          </form>
+    </div>
+    <div class="row" >
+        <div class="col-md-4" *ngFor="let book of filteredBooks">
+            <img src="{{book.image}}" class="card-img-top" alt="Book Image">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{book.title}}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{book.author}}</h6>
+              <p class="card-text">{{book.description}}</p>
+              <button class="btn btn-primary">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+
+</div>
