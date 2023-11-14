@@ -1,6 +1,6 @@
 
 
-## About Laravel
+## About 
 ## Run
 ```composer install```
 
