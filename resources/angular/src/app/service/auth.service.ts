@@ -11,7 +11,7 @@ import { CookieService } from './cookie.service';
 export class AuthService {
 
     public apiUrl: any;
-
+public adminStatus =false;
 
   constructor(private http: HttpClient,private location:Location,public cookie :CookieService) {
     this.apiUrl = this.getApiUrl('api');
@@ -33,6 +33,19 @@ console.log("apiURL",this.apiUrl);
   };
   getToken(){
     return this.cookie.readCookie('token');
+  }
+
+  isAdmin(): Observable<any> {
+   let httpOptions = {};
+      let auth = 'Bearer ' + this.getToken();
+      console.log("auth test->",auth.replaceAll('"',''));
+      this.httpOptions ={
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': auth.replaceAll('"','')
+          })
+        };
+      return this.http.get<any>(this.apiUrl+ "/admin", this.httpOptions);
   }
   login(auth: any): Observable<any> {
     return this.http.post<any>(this.apiUrl+ "/login", auth, this.httpOptions);

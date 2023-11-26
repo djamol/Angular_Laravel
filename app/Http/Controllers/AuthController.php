@@ -42,10 +42,15 @@ class AuthController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'Could not create token'], 500);
         }
-
-        return response()->json(['token' => $token], 200);
+        $id=Auth::id();
+        $admin =User::select('admin')->where('id', $id)->get()->first()->admin;
+        return response()->json(['token' => $token,'admin'=>$admin], 200);
     }
-
+    public function admin(){
+       $id=Auth::id();
+       $data =User::select('admin')->where('id', $id)->get()->first();
+       return response()->json(['status' => $data->admin], 200);
+    }
     public function refresh()
     {
         try {

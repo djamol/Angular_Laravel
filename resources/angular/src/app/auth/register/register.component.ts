@@ -25,6 +25,7 @@ export class RegisterComponent {
               let token=  this.AuthService.cookie.readCookie('token');
               console.log("token--",token);
               console.log("login",response);
+              this.main.showMessage('Success','Successfully Registered','');
             },
             error: error => {
               console.log('Error:', error.error);

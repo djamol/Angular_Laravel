@@ -20,6 +20,7 @@ export class LoginComponent {
             next: response => {
               if(response.token){
                 this.AuthService.cookie.storeCookie('token',response.token);
+               if(response.admin==1){this.AuthService.adminStatus=true;}
                 this.router.navigate(['/admin']);
               }else{
                 this.main.showMessage('Error :'+response.status,"Error Auth",'',1);
@@ -35,20 +36,7 @@ export class LoginComponent {
           };
 
           this.AuthService.login(this.form).subscribe(observer);
-        this.AuthService.login(this.form).subscribe((data: any) => {
-            console.log("e",data);
-            if(data.token){
 
-                this.AuthService.cookie.storeCookie('token',data.token);
-                this.router.navigate(['/admin']);
-            }else if(data.error){
-
-                this.main.showMessage('Error :'+data.status,data.error,'');
-            }
-          console.log("login",data);
-      }
-      )
-      ;
 
       }
 }

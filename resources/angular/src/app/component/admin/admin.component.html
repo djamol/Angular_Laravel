@@ -1,0 +1,290 @@
+<div class="container">
+        <div class="btn-group">
+            <button type="button" (click)="show=1" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Movies
+            </button>
+            <button type="button" (click)="show=2" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Add Movie
+            </button>
+            <button type="button" (click)="show=3" class="btn btn-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Categories
+            </button>
+        </div>
+<div *ngIf="show==1">
+    <h1>Movie List</h1>
+    <form>
+      <div class="form-group">
+        <input type="text" class="form-control" value="" placeholder="Search by Title" [(ngModel)]="searchKey" (input)="filterMovies()" [ngModelOptions]="{standalone: true}">
+      </div>
+      <div class="form-group">
+        <select class="form-control" [(ngModel)]="category_id" (change)="filterMovies()" [ngModelOptions]="{standalone: true}">
+          <option value="All">All Categories</option>
+          <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+        </select>
+      </div>
+    </form>
+    <div class="container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Director</th>
+              <th>Country</th>
+              <th>Awards</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let movie of filteredMovies">
+                <td>
+                    <ng-container *ngIf="!isEditing[movie.id]">
+                        {{ movie.title }}
+                      </ng-container>
+                      <ng-container *ngIf="isEditing[movie.id]">
+                        <input type="text" [(ngModel)]="movie.title" [ngModelOptions]="{standalone: true}">
+                      </ng-container>
+                </td>
+              <td >
+                <ng-container *ngIf="!isEditing[movie.id]">
+                    {{ movie.director }}
+                  </ng-container>
+                  <ng-container *ngIf="isEditing[movie.id]">
+                    <input type="text" [(ngModel)]="movie.director" [ngModelOptions]="{standalone: true}">
+                  </ng-container>
+              </td>
+              <td >
+                <ng-container *ngIf="!isEditing[movie.id]">
+                    {{ movie.country }}
+                  </ng-container>
+                  <ng-container *ngIf="isEditing[movie.id]">
+                    <input type="text" [(ngModel)]="movie.country" [ngModelOptions]="{standalone: true}">
+                  </ng-container>
+              </td>
+              <td >
+                <ng-container *ngIf="!isEditing[movie.id]">
+                    {{ movie.awards }}
+                  </ng-container>
+                  <ng-container *ngIf="isEditing[movie.id]">
+                    <input type="text" [(ngModel)]="movie.awards" [ngModelOptions]="{standalone: true}">
+                  </ng-container>
+              </td>
+              <td >
+                <ng-container *ngIf="!isEditing[movie.id]">
+                    {{ movie.category_id }}
+                  </ng-container>
+                  <ng-container *ngIf="isEditing[movie.id]">
+                    <select [(ngModel)]="movie.category_id" name="category_id" id="category_id" class="form-control" required [ngModelOptions]="{standalone: true}">
+                        <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+                      </select>
+                  </ng-container>
+              </td>
+              <td>
+                <button class="btn btn-primary" (click)="toggleEditing(movie)">Edit</button>
+                <button class="btn btn-danger" (click)="deleteMovie(movie)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <nav *ngIf="unFilteredMovies" aria-label="Page navigation">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="!page_data.prevPageUrl">
+              <a *ngIf="page_data.prevPageUrl" class="page-link" href="{{ page_data.prevPageUrl }}">&laquo; Previous</a>
+              <span *ngIf="!page_data.prevPageUrl" class="page-link">&laquo; Previous</span>
+            </li>
+            <li class="page-item" [class.active]="page_data.currentPage === page_data.link.label" *ngFor="let link of page_data.links">
+              <a *ngIf="page_data.link.url" class="page-link" href="{{ page_data.link.url }}">{{ link.label }}</a>
+              <span *ngIf="!page_data.link.url" class="page-link">{{ link.label }}</span>
+            </li>
+            <li class="page-item" [class.disabled]="!page_data.nextPageUrl">
+              <a *ngIf="page_data.nextPageUrl" class="page-link" href="{{ page_data.nextPageUrl }}">Next &raquo;</a>
+              <span *ngIf="!page_data.nextPageUrl" class="page-link">Next &raquo;</span>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+
+    </div>
+    </div>
+
+    <div *ngIf="show==2">
+        <h2>Add Movie</h2>
+<form (ngSubmit)="addMovie()" #movieForm="ngForm">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input [(ngModel)]="selectedMovie.title" name="title" id="title" placeholder="Title" required class="form-control"
+          [ngModelOptions]="{standalone: true}" #title="ngModel" />
+          <div *ngIf="title?.invalid && (title?.dirty || title?.touched)">
+            <div *ngIf="title?.errors?.['required']">Title is required.</div>
+
+          </div>
+      </div>
+      <div class="form-group">
+        <label for="category_id">Categories</label>
+        <select [(ngModel)]="selectedMovie.category_id" name="category_id" id="category_id" class="form-control" required [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+        </select>
+    </div>
+      <div class="form-group">
+        <label for="year">Year</label>
+        <input [(ngModel)]="selectedMovie.year" name="year" id="year" placeholder="Year" required pattern="\d{4}"
+          class="form-control" [ngModelOptions]="{standalone: true}" #year="ngModel" />
+        <div *ngIf="year.invalid && (year.dirty || year.touched)">
+          <div *ngIf="year?.errors?.['required']">Year is required.</div>
+          <div *ngIf="year?.errors?.['pattern']">Invalid year format (use 4 digits).</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="language">Language</label>
+        <select [(ngModel)]="selectedMovie.language" name="language" id="language" class="form-control" required
+          [ngModelOptions]="{standalone: true}" #language="ngModel">
+          <option value="" disabled>Select Language</option>
+          <option value="en">English</option>
+          <option value="es">Hindi</option>
+
+        </select>
+        <div *ngIf="language.invalid && (language.dirty || language.touched)">
+          <div *ngIf="language.errors?.['required']">Language is required.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="genre">Genre</label>
+        <select [(ngModel)]="selectedMovie.genre" name="genre" id="genre" multiple="true" class="form-control"
+          [ngModelOptions]="{standalone: true}" #genre="ngModel">
+          <option *ngFor="let g of genreOptions" value="{{g}}">{{ g }}</option>
+        </select>
+        <div *ngIf="genre.invalid && (genre.dirty || genre.touched)">
+          <div *ngIf="genre.errors?.['required']">Genre is required.</div>
+        </div>
+      </div>
+
+<div class="form-group">
+    <label for="director">Director</label>
+    <input [(ngModel)]="selectedMovie.director" name="director" id="director" placeholder="Director" required class="form-control"
+      [ngModelOptions]="{standalone: true}" #director="ngModel" />
+    <div *ngIf="director.invalid && (director.dirty || director.touched)">
+      <div *ngIf="director.errors?.['required']">Director is required.</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="country">Country</label>
+    <input [(ngModel)]="selectedMovie.country" name="country" id="country" placeholder="Country" required class="form-control"
+      [ngModelOptions]="{standalone: true}" #country="ngModel" />
+    <div *ngIf="country.invalid && (country.dirty || country.touched)">
+      <div *ngIf="country.errors?.['required']">Country is required.</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="awards">Awards</label>
+    <input [(ngModel)]="selectedMovie.awards" name="country" id="country" placeholder="Awards" required class="form-control"
+      [ngModelOptions]="{standalone: true}" #awards="ngModel" />
+    <div *ngIf="awards.invalid && (awards.dirty || awards.touched)">
+      <div *ngIf="awards.errors?.['required']">Awards is required.</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="writer">Writer</label>
+    <input [(ngModel)]="selectedMovie.writer" name="writer" id="writer" placeholder="Writer" required class="form-control"
+      [ngModelOptions]="{standalone: true}" #writer="ngModel" />
+    <div *ngIf="writer.invalid && (writer.dirty || writer.touched)">
+      <div *ngIf="writer.errors?.['required']">Writer is required.</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="actors">Actors</label>
+    <input [(ngModel)]="selectedMovie.actors" name="actors" id="actors" placeholder="Actors" required class="form-control"
+      [ngModelOptions]="{standalone: true}" #actors="ngModel" />
+    <div *ngIf="actors.invalid && (actors.dirty || actors.touched)">
+      <div *ngIf="actors.errors?.['required']">Actors are required.</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="plot">Plot</label>
+    <textarea [(ngModel)]="selectedMovie.plot" name="plot" id="plot" placeholder="Plot" required class="form-control"
+      [ngModelOptions]="{standalone: true}" #plot="ngModel"></textarea>
+    <div *ngIf="plot.invalid && (plot.dirty || plot.touched)">
+      <div *ngIf="plot.errors?.['required']">Plot is required.</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="rated">Rated</label>
+    <input [(ngModel)]="selectedMovie.rated" name="rated" id="rated" placeholder="rated"  class="form-control"
+      [ngModelOptions]="{standalone: true}" #rated="ngModel" />
+  </div>
+  <div class="form-group">
+    <label for="released">Released</label>
+    <input [(ngModel)]="selectedMovie.released" name="released" id="released" placeholder="Released"  class="form-control"
+      [ngModelOptions]="{standalone: true}" #released="ngModel" />
+  </div>
+  <div class="form-group">
+    <label for="runtime">runtime</label>
+    <input [(ngModel)]="selectedMovie.runtime" name="runtime" id="released" placeholder="runtime"  class="form-control"
+      [ngModelOptions]="{standalone: true}" #runtime="ngModel" />
+  </div>
+  <div class="form-group">
+    <label for="poster">poster</label>
+    <input [(ngModel)]="selectedMovie.poster" name="poster" id="released" placeholder="poster"  class="form-control"
+      [ngModelOptions]="{standalone: true}" #poster="ngModel" />
+  </div>
+  <div class="form-group">
+    <label for="production">production</label>
+    <input [(ngModel)]="selectedMovie.production" name="production" id="released" placeholder="production"  class="form-control"
+      [ngModelOptions]="{standalone: true}" #production="ngModel" />
+  </div>
+  <div class="form-group">
+    <label for="ratings">ratings</label>
+    <input [(ngModel)]="selectedMovie.ratings" name="ratings" id="ratings" placeholder="ratings"  class="form-control"
+      [ngModelOptions]="{standalone: true}" #ratings="ngModel" />
+  </div>
+  <input   [(ngModel)]="selectedMovie.type" type="hidden" value="movie"/>
+    <button type="submit" class="btn btn-primary" [disabled]="movieForm.invalid">Add Movie</button>
+
+</form>
+</div>
+<div *ngIf="show==3">
+
+        <h2 >Add Category</h2>
+        <form (ngSubmit)="addCategory()">
+
+          <input [(ngModel)]="selectedCategory.name" placeholder="Category Name" required   [ngModelOptions]="{standalone: true}"/>
+          <button type="submit">Add Category</button>
+        </form>
+
+        <div class="container">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Category Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let category of categories">
+                    <td>
+                        {{category.id}}
+                    </td>
+                    <td>
+                        <ng-container *ngIf="!isEditing[category.id]">
+                            {{ category.name }}
+                          </ng-container>
+                          <ng-container *ngIf="isEditing[category.id]">
+                            <input type="text" [(ngModel)]="category.name"  [ngModelOptions]="{standalone: true}">
+                          </ng-container>
+                    </td>
+                  <td>
+                    <button class="btn btn-primary" (click)="toggleEditingCategories(category)">Edit</button>
+                    <button class="btn btn-danger" (click)="deleteCategory(category)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+    </div>
+
+
+  </div>

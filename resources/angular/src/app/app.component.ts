@@ -9,12 +9,24 @@ import { AuthService } from './service/auth.service';
 export class AppComponent {
   title = 'angular';
   token ='';
+  admin =false;
   flag_status:boolean =true;
   notification_status:any={"show":false};
   constructor(public AuthService: AuthService) {
     this.token=this.AuthService.getToken();
   }
   ngOnInit(): void {
+    if(!this.AuthService.adminStatus)
+    this.checkAdmin();
+
+  }
+  checkAdmin(){
+    this.AuthService.isAdmin().subscribe(res=> {
+        console.log(res);
+        if(res.status==1){
+            this.AuthService.adminStatus=true;
+        }
+    });
   }
   showMessage(title:string,message:string,time:string,err:number=0){
     if(err==1){this.flag_status=false;}else{this.flag_status=true;}

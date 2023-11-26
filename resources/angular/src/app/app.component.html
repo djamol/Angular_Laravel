@@ -21,7 +21,7 @@
           <li *ngIf="AuthService.getToken()!=''" class="nav-item">
             <a class="nav-link" (click)="logout()">Logout</a>
           </li>
-        <li *ngIf="AuthService.getToken()!=''" class="nav-item">
+        <li *ngIf="AuthService.getToken()!=''&& AuthService.adminStatus" class="nav-item">
             <a class="nav-link" routerLink="/admin">Admin</a>
           </li>
         </ul>

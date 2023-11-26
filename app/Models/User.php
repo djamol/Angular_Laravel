@@ -47,6 +47,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->getKey();
     }
+    public function isAdmin()
+    {
+        return $this->admin;
+    }
 
     public function getJWTCustomClaims()
     {
